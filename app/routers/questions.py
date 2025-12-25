@@ -32,6 +32,7 @@ def create_question(
     question = Question(
         test_id=test_id,
         content=request.content,
+        order_no=request.order_no,
     )
 
     db.add(question)

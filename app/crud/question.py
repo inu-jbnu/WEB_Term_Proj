@@ -12,7 +12,8 @@ def get_questions_by_test(db: Session, test_id: int) -> list[Question]:
 def create_question(db: Session, test_id: int, question_data: QuestionCreate) -> Question:
     question = Question(
         test_id=test_id,
-        content=question_data.content
+        content=question_data.content,
+        order_no=question_data.order_no
     )
     db.add(question)
     db.commit()
