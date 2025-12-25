@@ -1,32 +1,181 @@
-# 🚀 [프로젝트 명을 입력하세요] - Term Project
+✅ README.md (최종본)
+# Web Term Project – FastAPI Backend
 
-## 1. 프로젝트 개요
-* **주제**: [예: FastAPI 기반의 중고 거래 플랫폼]
-* **핵심 기능**:
-    * JWT 기반 사용자 인증 및 권한 관리 (USER/ADMIN)
-    * 핵심 리소스([리소스명1], [리소스명2], [리소스명3], [리소스명4]) CRUD 구현
-    * Redis를 활용한 Rate-limit 및 캐싱 적용
-    * 조건별 검색, 정렬 및 페이지네이션 기능
+FastAPI + MySQL + JWT 기반 웹 서비스 백엔드 프로젝트입니다.  
+Docker Compose 환경에서 실행되며, 인증(Auth)부터 테스트/질문/선택지/결과 관리까지 구현되어 있습니다.
 
-## 2. 기술 스택
-* **Framework**: FastAPI (Python)
-* **Database**: MySQL (RDB), Redis (Cache)
-* **ORM/Migration**: SQLAlchemy / Alembic
-* **Deployment**: Docker, Docker-Compose
-* **Auth**: Firebase Auth + JWT
+---
 
-## 3. 실행 방법 (Docker 기반)
-서버에는 Docker와 Docker-Compose가 설치되어 있어야 합니다.
+## 📌 기술 스택
 
-```bash
-# 1. 저장소 클론
-git clone [본인_레포_주소]
-cd [폴더명]
+- **Backend**: FastAPI
+- **ORM**: SQLAlchemy
+- **Database**: MySQL 8.0
+- **Authentication**: JWT (python-jose)
+- **Password Hash**: passlib + bcrypt
+- **Infra**: Docker, Docker Compose
+- **API Test**: Postman
+- **Docs**: Swagger UI
 
-# 2. 환경 변수 설정 (.env 파일 생성 필요)
-cp .env.example .env
-# .env 파일 내의 정보를 본인의 설정에 맞게 수정하세요.
+---
 
-# 3. Docker Compose 실행
-docker-compose up -d --build
-4. 배포 정보API Root: http://[JCloud_IP]:[Port]/Swagger UI: http://[JCloud_IP]:[Port]/docsHealth Check: http://[JCloud_IP]:[Port]/health5. API 요약 및 권한MethodURL설명권한POST/auth/login로그인 및 토큰 발급누구나GET/posts게시글 목록 조회 (검색/정렬)누구나POST/posts게시글 작성ROLE_USERDELETE/admin/users/{id}사용자 강제 탈퇴ROLE_ADMIN전체 30개 이상의 엔드포인트는 Swagger에서 확인 가능합니다.6. 테스트 계정일반 유저: user@example.com / password123관리자: admin@example.com / admin1237. 설계 및 보안 고려사항보안: 비밀번호 bcrypt 해싱, JWT Access/Refresh 토큰 적용, CORS 제한.성능: DB 인덱스 설계, Redis를 통한 쿼리 최적화 및 Rate-limiting 적용.에러 처리: 모든 에러는 일관된 JSON 포맷으로 응답합니다.
+## 📂 프로젝트 구조
+
+
+
+app/
+├─ core/
+│ ├─ config.py # 환경 설정
+│ ├─ security.py # JWT / 비밀번호 처리
+│
+├─ db/
+│ ├─ models/ # SQLAlchemy 모델
+│ ├─ session.py # DB 세션 관리
+│
+├─ routers/
+│ ├─ auth.py # 로그인
+│ ├─ users.py # 사용자 API
+│ ├─ tests.py # 테스트 API
+│ ├─ questions.py # 질문 API
+│ ├─ question_choices.py
+│ ├─ answers.py
+│ ├─ results.py
+│
+├─ main.py # FastAPI 엔트리포인트
+
+
+---
+
+## ⚙️ 실행 방법
+
+### 1️⃣ 환경 변수 설정 (.env)
+
+```env
+DB_HOST=db
+DB_PORT=3306
+DB_NAME=webdb
+DB_USER=root
+DB_PASSWORD=rootpw
+
+SECRET_KEY=change-me
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+
+2️⃣ Docker 실행
+docker compose up -d --build
+
+
+컨테이너 상태 확인:
+
+docker compose ps
+
+3️⃣ API 문서 확인
+
+Swagger UI
+
+http://localhost:8080/docs
+
+
+또는
+
+http://<SERVER_IP>:10224/docs
+
+
+Health Check
+
+GET /health
+
+🔐 인증 (Auth)
+로그인
+POST /auth/login
+
+
+Request
+
+{
+  "email": "admin@example.com",
+  "password": "abcd1234"
+}
+
+
+Response
+
+{
+  "access_token": "JWT_TOKEN",
+  "token_type": "bearer"
+}
+
+
+Postman에서 받은 토큰을
+Authorization: Bearer <TOKEN> 형태로 사용합니다.
+
+👤 User API
+
+POST /user/ : 사용자 생성
+
+GET /user/ : 사용자 목록 조회
+
+GET /user/{user_id} : 사용자 단건 조회
+
+🧪 Test API
+
+POST /tests/ : 테스트 생성
+
+GET /tests/ : 테스트 목록 조회
+
+GET /tests/{test_id} : 테스트 조회
+
+PUT /tests/{test_id} : 테스트 수정
+
+DELETE /tests/{test_id} : 테스트 삭제
+
+❓ Question API
+
+POST /questions/tests/{test_id}/questions
+
+GET /questions/tests/{test_id}/questions
+
+⚠️ test_id는 반드시 존재하는 테스트 ID여야 합니다.
+
+🧪 Postman 사용 흐름
+
+POST /auth/login → access_token 획득
+
+Postman Collection Auth 설정
+
+Type: Bearer Token
+
+Token: {{ACCESS_TOKEN}}
+
+테스트 생성
+
+질문 생성
+
+선택지 생성
+
+결과 조회
+
+🐛 트러블슈팅
+500 Internal Server Error 발생 시
+docker compose logs --tail=200 app
+
+
+자주 발생하는 원인:
+
+존재하지 않는 test_id로 질문 생성
+
+NOT NULL 컬럼 누락
+
+FK 관계 오류
+
+중복 데이터 (UNIQUE)
+
+✨ 향후 개선 사항
+
+Swagger Authorize 버튼 추가
+
+Role 기반 권한 분리 (ADMIN / USER)
+
+Alembic 마이그레이션 정리
+
+테스트 결과 통계 API
