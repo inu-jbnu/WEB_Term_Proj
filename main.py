@@ -7,6 +7,10 @@ from fastapi import Request
 
 app = FastAPI(title="My Web API")
 
+from app.db.base import Base
+from app.db.session import engine
+Base.metadata.create_all(bind=engine)
+
 # 라우터 등록
 app.include_router(auth.router)
 app.include_router(user.router)

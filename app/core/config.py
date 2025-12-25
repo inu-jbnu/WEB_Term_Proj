@@ -15,4 +15,8 @@ class Settings:
         f"@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    SECRET_KEY: str = "change-me"
+    ALGORITHM: str = "HS256"
+
 settings = Settings()

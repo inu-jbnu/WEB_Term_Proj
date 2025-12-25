@@ -85,4 +85,4 @@ if context.is_offline_mode():
 else:
     run_migrations_online()
 
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)

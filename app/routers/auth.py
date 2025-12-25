@@ -15,7 +15,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == data.email).first()
     if not user:
         raise AppException(**USER_NOT_FOUND, details={"email": data.email})
-    if not verify_password(data.password, user.hashed_password):
+    if not verify_password(data.password, user.password):
         raise AppException(**UNAUTHORIZED, details={"email": data.email})
     
     token = create_access_token({"sub": user.email})
